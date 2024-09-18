@@ -1,5 +1,6 @@
 package com.example.notificationservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,8 +16,12 @@ import java.time.Instant;
 public class Notification {
     @Id
     private String id;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String userId;
+
     private String message;
+
     private Instant timestamp;
 
 }

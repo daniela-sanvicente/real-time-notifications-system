@@ -9,7 +9,4 @@ import reactor.core.publisher.Mono;
 public interface UserRepository extends ReactiveMongoRepository<User, String> {
 
 
-    // metodos personalizados para buscar user por id
-    Mono<User>  findById(String id);
-
 }

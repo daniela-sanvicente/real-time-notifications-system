@@ -1,29 +1,42 @@
 package com.example.notificationservice.service;
 
+import com.example.notificationservice.entity.Notification;
 import com.example.notificationservice.entity.User;
+import com.example.notificationservice.repository.NotificationRepository;
 import com.example.notificationservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Service
 public class UserService {
 
     private UserRepository userRepository;
+    private NotificationRepository notificationRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository){
+    public UserService(UserRepository userRepository, NotificationRepository notificationRepository) {
         this.userRepository = userRepository;
+        this.notificationRepository = notificationRepository;
     }
+    public Flux<User> getAllUsersWithNotificationMessages() {
+        return userRepository.findAll()
+                .flatMap(user -> {
+                    List<String> notificationIds = user.getNotifications();
 
-    //obtener la lista de los usuraios
-    public Flux<User> getAllUsers(){
-        return userRepository.findAll();
-    }
-    //Obtener usuario por id
-    public Mono<User> findById (String id){
-        return userRepository.findById(id);
+                    // Obtener las notificaciones por sus IDs
+                    return Flux.fromIterable(notificationIds)
+                            .flatMap(notificationRepository::findById)
+                            .map(Notification::getMessage) // Extraer solo el mensaje de la notificación
+                            .collectList() // Coleccionar los mensajes en una lista
+                            .flatMap(messages -> {
+                                user.setNotifications(messages); // Reemplazar los IDs con los mensajes
+                                return Mono.just(user); // Devolver el usuario con las notificaciones transformadas
+                            });
+                });
     }
 
     //Guardar un usuario

@@ -1,6 +1,7 @@
 package com.example.notificationservice.controller;
 
 import com.example.notificationservice.entity.User;
+import com.example.notificationservice.service.NotificationService;
 import com.example.notificationservice.service.UserService;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -10,20 +11,18 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api-clients/v1.0/users")
 public class UserController {
     private final UserService userService;
+    private final NotificationService notificationService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, NotificationService notificationService) {
         this.userService = userService;
+
+        this.notificationService = notificationService;
     }
 
     //Obtener todos los usuarios
     @GetMapping
-    public Flux<User> getAllUser(){
-        return userService.getAllUsers();
-    }
-    //obtener usuarios por id
-    @GetMapping("/{id}")
-    public Mono<User> getUserById(@PathVariable String id){
-        return userService.findById(id);
+    public Flux<User> getAllUsersWithNotifications() {
+        return userService.getAllUsersWithNotificationMessages();
     }
     //Guardar un usuario
     @PostMapping
