@@ -11,12 +11,10 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api-clients/v1.0/users")
 public class UserController {
     private final UserService userService;
-    private final NotificationService notificationService;
+
 
     public UserController(UserService userService, NotificationService notificationService) {
         this.userService = userService;
-
-        this.notificationService = notificationService;
     }
 
     //Obtener todos los usuarios
@@ -24,17 +22,18 @@ public class UserController {
     public Flux<User> getAllUsersWithNotifications() {
         return userService.getAllUsersWithNotificationMessages();
     }
+
     //Guardar un usuario
     @PostMapping
-    public <S extends User> Mono<S> saveUSer(@RequestBody S user){
+    public <S extends User> Mono<S> saveUSer(@RequestBody S user) {
         return userService.saveUser(user);
     }
+
     //Eliminar un usuario
     @DeleteMapping("/{id}")
-    public Mono<Void> deleteUserById(@PathVariable String id){
+    public Mono<Void> deleteUserById(@PathVariable String id) {
         return userService.deleteUserById(id);
     }
-
 
 
 }

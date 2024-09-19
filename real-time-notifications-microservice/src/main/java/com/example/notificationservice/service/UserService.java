@@ -10,12 +10,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
 
-    private UserRepository userRepository;
-    private NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     @Autowired
     public UserService(UserRepository userRepository, NotificationRepository notificationRepository) {
@@ -41,6 +42,9 @@ public class UserService {
 
     //Guardar un usuario
     public <S extends User>Mono<S> saveUser(S user){
+        if (user.getId() == null || user.getId().isEmpty()) {
+            user.setId(UUID.randomUUID().toString().substring(0,6));  // Generar un ID único para el usuario
+        }
         return userRepository.save(user);
     }
 
