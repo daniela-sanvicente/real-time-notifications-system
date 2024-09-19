@@ -30,4 +30,10 @@ public class NotificationController {
         return notificationService.getUserByIdWithNotificationMessagesNotification(userId);
     }
 
+    // Metodo DELETE para marcar la notificación como vista (eliminarla del usuario)
+    @DeleteMapping("/users/{userId}/notifications")
+    public Mono<String> deleteNotification(@PathVariable String userId, @RequestBody String notificationId) {
+        return notificationService.deleteNotificationFromUser(userId, notificationId);
+    }
+
 }

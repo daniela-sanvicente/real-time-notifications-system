@@ -33,7 +33,7 @@ public class NotificationService {
                     notification.setTimestamp(Instant.now()); // Establece el timestamp actual
                     return notificationRepository.save(notification)
                             .flatMap(savedNotification -> {
-                                user.getNotifications().add(savedNotification.getId()); // Agrega el ID al usuario
+                                user.getNotifications().add(savedNotification.getMessage()); // Agrega el msj al usuario
                                 return userRepository.save(user).thenReturn(savedNotification);
                             });
                 })
@@ -56,6 +56,28 @@ public class NotificationService {
                                 user.setNotifications(messages); // Asignar los mensajes al usuario
                                 return Mono.just(user); // Retornar el usuario con los mensajes
                             });
+                });
+    }
+
+    // Metodo para eliminar una notificación del usuario cuando se marca como vista
+    public Mono<String> deleteNotificationFromUser(String userId, String notificationId) {
+        return userRepository.findById(userId)
+                .switchIfEmpty(Mono.error(new RuntimeException("Usuario no encontrado con ID: " + userId)))
+                .flatMap(user -> {
+                    if (user.getNotifications().contains(notificationId)) {
+                        // Eliminar la notificación de la lista del usuario
+                        user.getNotifications().remove(notificationId);
+
+                        // Guardar el usuario actualizado
+                        return userRepository.save(user)
+                                // Luego, eliminar la notificación de la base de datos de notificaciones
+                                .then(notificationRepository.deleteById(notificationId))
+                                // Retornar un mensaje de éxito
+                                .thenReturn("La notificación con ID: " + notificationId + " ha sido leída y eliminada con éxito.");
+                    } else {
+                        // Si la notificación no existe en la lista de notificaciones del usuario
+                        return Mono.error(new RuntimeException("Notificación no encontrada para el usuario con ID: " + userId));
+                    }
                 });
     }
 
