@@ -9,4 +9,12 @@ public class NotificationDto {
     private String message;
     private String timestamp;
 
+    public NotificationDto() {
+    }
+
+    public NotificationDto(String userId, String message) {
+        this.userId = userId;
+        this.message = message;
+    }
+
 }

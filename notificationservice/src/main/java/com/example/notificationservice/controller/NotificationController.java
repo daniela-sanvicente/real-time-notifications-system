@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.ui.Model;
+
 import com.example.notificationservice.dto.NotificationDto;
 import com.example.notificationservice.entity.Notification;
 import com.example.notificationservice.service.NotificationService;
@@ -19,6 +21,8 @@ import com.example.notificationservice.utils.DateUtils;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+
 
 @RestController
 @RequestMapping("/notifications")
@@ -38,4 +42,17 @@ public class NotificationController {
         return notificationService.getNotificationsForUser(userId)
         .map(notification -> ServerSentEvent.builder(notification).build());
     }
+
+    @GetMapping("/view")
+    public String view(Model model) {
+        model.addAttribute("notifications", "Saludos");
+        return "index";
+    }
+
+    @GetMapping("/all")
+    public Flux<Notification> getAllNotifications() {
+        return notificationService.getAllNotifications();
+    }
+    
+    
 }

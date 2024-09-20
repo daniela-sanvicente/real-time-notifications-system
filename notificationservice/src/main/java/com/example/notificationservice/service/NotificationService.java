@@ -39,4 +39,8 @@ public class NotificationService {
     public Flux<Notification> getNotificationsForUser(String userId) {
         return notificationRepository.findByUserId(userId);
     }
+
+    public Flux<Notification> getAllNotifications(){
+        return notificationRepository.findAll();
+    }
 }
