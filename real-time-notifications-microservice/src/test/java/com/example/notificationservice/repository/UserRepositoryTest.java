@@ -4,7 +4,6 @@ import com.example.notificationservice.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-
 import org.springframework.test.context.ContextConfiguration;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -12,13 +11,14 @@ import reactor.test.StepVerifier;
 import java.util.Arrays;
 import java.util.List;
 
-@DataMongoTest  //Este nos indica que esta va estar enfocado a la capa de persitencia de datos usando MongoDB
+import static org.junit.jupiter.api.Assertions.*;
+
+@DataMongoTest // Este se asegura de que los repositorios de Mongo se configuren correctamente
 @ContextConfiguration(classes = {com.example.notificationservice.RealTimeNotificationsMicroserviceApplication.class}) // Asegura que se cargue la configuración del contexto
-class NotificationRepositoryTest {
+class UserRepositoryTest {
+
     @Autowired
-    private NotificationRepository notificationRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private UserRepository userRepository; // Asegúrate de que este bean sea inyectado
 
     @Test
     void testFindUserAndNotifications() {
@@ -30,7 +30,7 @@ class NotificationRepositoryTest {
         User user = new User("14dadd", "Juan Spert", "juan.spert@example.com", notifications);
 
         // Guardar usuario
-        Mono<User> userMono = userRepository.save(user);
+        Mono<User> userMono = userRepository.save(user); // Aquí guardamos el usuario en MongoDB
 
         // Verificar que el usuario fue guardado correctamente
         StepVerifier.create(userMono)
@@ -51,5 +51,4 @@ class NotificationRepositoryTest {
                 })
                 .verifyComplete();
     }
-
 }

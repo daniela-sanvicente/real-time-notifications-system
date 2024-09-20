@@ -19,9 +19,6 @@ public class Notification {
 
     private String userReferenceId;
 
-@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String userId;
-
     private String message;
 
     private Instant timestamp;

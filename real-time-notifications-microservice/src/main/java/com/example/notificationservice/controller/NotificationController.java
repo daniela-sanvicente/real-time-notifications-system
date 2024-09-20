@@ -3,7 +3,6 @@ package com.example.notificationservice.controller;
 import com.example.notificationservice.HttpResponse.ApiResponse;
 import com.example.notificationservice.HttpResponse.ResponseUtil;
 import com.example.notificationservice.entity.Notification;
-import com.example.notificationservice.entity.User;
 import com.example.notificationservice.repository.NotificationRepository;
 import com.example.notificationservice.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
