@@ -16,8 +16,6 @@ import java.util.List;
 @ContextConfiguration(classes = {com.example.notificationservice.RealTimeNotificationsMicroserviceApplication.class}) // Asegura que se cargue la configuración del contexto
 class NotificationRepositoryTest {
     @Autowired
-    private NotificationRepository notificationRepository;
-    @Autowired
     private UserRepository userRepository;
 
     @Test

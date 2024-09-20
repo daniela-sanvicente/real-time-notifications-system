@@ -11,14 +11,13 @@ import reactor.test.StepVerifier;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest // Este se asegura de que los repositorios de Mongo se configuren correctamente
 @ContextConfiguration(classes = {com.example.notificationservice.RealTimeNotificationsMicroserviceApplication.class}) // Asegura que se cargue la configuración del contexto
 class UserRepositoryTest {
 
     @Autowired
-    private UserRepository userRepository; // Asegúrate de que este bean sea inyectado
+    private UserRepository userRepository; //  bean inyectado
 
     @Test
     void testFindUserAndNotifications() {

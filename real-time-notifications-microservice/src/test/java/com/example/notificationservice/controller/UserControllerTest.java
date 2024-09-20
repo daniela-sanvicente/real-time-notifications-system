@@ -6,8 +6,7 @@ import com.example.notificationservice.service.NotificationService;
 import com.example.notificationservice.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -28,25 +27,75 @@ class UserControllerTest {
     private UserService userService;
 
     @MockBean
-    private NotificationService notificationService;
-
-    @InjectMocks
-    private UserController userController;
+    private NotificationService notificationService;  // Agrega esto para simular NotificationService
 
     private WebTestClient webTestClient;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        webTestClient = WebTestClient.bindToController(userController).build();
+        webTestClient = WebTestClient.bindToController(new UserController(userService, notificationService)).build();
     }
 
     @Test
-    void testDeleteUser_Success() {
-        // Simulamos que el servicio elimina correctamente al usuario
-        when(userService.deleteUserById(anyString())).thenReturn(Mono.just("Usuario eliminado con éxito"));
+    void testGetAllUsers() {
+        // Crea datos de ejemplo
+        User user1 = new User();
+        user1.setId("1");
+        user1.setName("User 1");
+        user1.setNotifications(Arrays.asList("notif1", "notif2"));
 
-        // Realizamos la petición DELETE y verificamos la respuesta
+        User user2 = new User();
+        user2.setId("2");
+        user2.setName("User 2");
+        user2.setNotifications(Collections.emptyList());
+
+        // Simula el servicio
+        when(userService.getAllUsersWithNotificationMessages()).thenReturn(Flux.just(user1, user2));
+
+        // Ejecuta la petición GET
+        webTestClient.get().uri("/api-clients/v1.0/users")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ApiResponse.class)
+                .consumeWith(response -> {
+                    ApiResponse<?> apiResponse = response.getResponseBody();
+                    assert apiResponse != null;
+                    assert apiResponse.getStatus().equals("success");
+                    assert apiResponse.getMessage().equals("Usuarios encontrados");
+                });
+    }
+
+    @Test
+    void testSaveUser() {
+        // Crea un usuario de ejemplo
+        User user = new User();
+        user.setId("1");
+        user.setName("Test User");
+
+        // Simula el servicio
+        when(userService.saveUser(any(User.class))).thenReturn(Mono.just(user));
+
+        // Ejecuta la petición POST
+        webTestClient.post().uri("/api-clients/v1.0/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(user)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ApiResponse.class)
+                .consumeWith(response -> {
+                    ApiResponse<?> apiResponse = response.getResponseBody();
+                    assert apiResponse != null;
+                    assert apiResponse.getStatus().equals("success");
+                    assert apiResponse.getMessage().equals("Usuario guardado con éxito.");
+                });
+    }
+
+    @Test
+    void testDeleteUser() {
+        // Simula el servicio
+        when(userService.deleteUserById(anyString())).thenReturn(Mono.just("Usuario con ID: 1 ha sido eliminado con éxito."));
+
+        // Ejecuta la petición DELETE
         webTestClient.delete().uri("/api-clients/v1.0/users/1")
                 .exchange()
                 .expectStatus().isOk()
@@ -55,16 +104,16 @@ class UserControllerTest {
                     ApiResponse<?> apiResponse = response.getResponseBody();
                     assert apiResponse != null;
                     assert apiResponse.getStatus().equals("success");
-                    assert apiResponse.getMessage().equals("Usuario eliminado con éxito");
+                    assert apiResponse.getMessage().equals("Usuario con ID: 1 ha sido eliminado con éxito.");
                 });
     }
 
     @Test
     void testDeleteUser_UserNotFound() {
-        // Simulamos que el servicio no encuentra el usuario
+        // Simula el servicio cuando el usuario no existe
         when(userService.deleteUserById(anyString())).thenReturn(Mono.error(new RuntimeException("Usuario no encontrado con ID: 1")));
 
-        // Ejecuta la petición DELETE y verifica que el estado sea 404
+        // Ejecuta la petición DELETE
         webTestClient.delete().uri("/api-clients/v1.0/users/1")
                 .exchange()
                 .expectStatus().isNotFound()

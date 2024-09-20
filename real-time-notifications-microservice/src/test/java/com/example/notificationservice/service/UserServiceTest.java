@@ -45,7 +45,7 @@ class UserServiceTest {
         // Simula el comportamiento del repositorio
         when(userRepository.findAll()).thenReturn(Flux.just(user1, user2));
 
-        // Ejecuta el método del servicio
+        // Ejecuta el metodo del servicio
         Flux<User> result = userService.getAllUsersWithNotificationMessages();
 
         // Verifica el comportamiento esperado
@@ -65,7 +65,7 @@ class UserServiceTest {
         // Simula el comportamiento del repositorio
         when(userRepository.save(any(User.class))).thenReturn(Mono.just(user));
 
-        // Ejecuta el método del servicio
+        // Ejecuta el metodo del servicio
         Mono<User> result = userService.saveUser(user);
 
         // Verifica el comportamiento esperado
@@ -85,7 +85,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Mono.just(user));
         when(userRepository.deleteById(userId)).thenReturn(Mono.empty());
 
-        // Ejecuta el método del servicio
+        // Ejecuta el metodo del servicio
         Mono<String> result = userService.deleteUserById(userId);
 
         // Verifica el comportamiento esperado
@@ -101,7 +101,7 @@ class UserServiceTest {
         // Simula que el usuario no existe
         when(userRepository.findById(userId)).thenReturn(Mono.empty());
 
-        // Ejecuta el método del servicio
+        // Ejecuta el metodo del servicio
         Mono<String> result = userService.deleteUserById(userId);
 
         // Verifica el comportamiento esperado
