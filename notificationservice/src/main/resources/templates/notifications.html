@@ -1,22 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Spring Boot CRUD Example</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Notificaciones en Tiempo Real</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    <ul class="nav nav-pills nav-justified">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">View Notifications</a>
-        </li>
-    </ul>
-    
-    <ul>
-        <li th:each="notification : ${notifications}">
-            <span th:text="${notification.id}">ID</span> 
-            <span th:text="${notification.message}">Message</span> 
-            <span th:text="${notification.timestamp}">Date</span>
-        </li>
-    </ul>
+    <nav class="navbar navbar-dark bg-dark">
+        <!-- Navbar content -->
+        <h2 class="text-white">Reactive Microservice API for Real-time Notifications</h2>
+    </nav>
+    <div class="container">
+        <h1 class="my-4">Notificaciones</h1>
+        <div id="notifications" class="list-group">
+            <!-- Mostrar notificaciones existentes -->
+            <div th:each="notification : ${notifications}" class="list-group-item">
+                <div th:text="${notification.userId}"></div>
+                <div th:text="${notification.message}"></div>
+                <div th:text="${notification.timestamp}"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userId = /*[[${userId}]]*/ 'defaultUserId'; // Thymeleaf reemplazará esta variable
+        let eventSource = new EventSource(`/notifications/stream/${userId}`);
+        let receivedNotifications = new Set();
+
+        eventSource.onmessage = function(event) {
+            const notification = JSON.parse(event.data);
+            if (!receivedNotifications.has(notification.id)) {
+                receivedNotifications.add(notification.id);
+                const notificationElement = document.createElement('div');
+                notificationElement.className = 'list-group-item';
+                notificationElement.textContent = notification.userId +' - '+notification.message;
+                document.getElementById('notifications').appendChild(notificationElement);
+            }
+        };
+
+        
+    </script>
 </body>
 </html>
+
