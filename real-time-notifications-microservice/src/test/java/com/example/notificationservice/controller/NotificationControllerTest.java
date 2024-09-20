@@ -22,6 +22,19 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+
+//test para los errores de la clase NotificationController
+// open api y swagger
+
+//OAS, OpenAPI Specification, es una especificación para describir y documentar APIs RESTful.
+//docker file define memoria, numero de replicas o instancias de la aplicacion, puerto, etc
+//kubernetes es un orquestador de contenedores, es decir, se encarga de gestionar y coordinar los contenedores de una aplicación.
+//compilar y namespace closter y nodo
+
+//discovery que contenedor tiene y cual se comunica con cual.
+
+//scehema de open api para documentar la api de notificaciones y usuarios
+
 @WebFluxTest(NotificationController.class)
 public class NotificationControllerTest {
 

@@ -18,6 +18,7 @@ public class Notification {
     private String id;
 
     private String userReferenceId;
+
 @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String userId;
 

@@ -23,34 +23,34 @@ public class UserService {
         this.userRepository = userRepository;
         this.notificationRepository = notificationRepository;
     }
+
     public Flux<User> getAllUsersWithNotificationMessages() {
         return userRepository.findAll()
                 .flatMap(user -> {
                     List<String> notificationIds = user.getNotifications();
-
-                    // Obtener las notificaciones por sus IDs
-                    return Flux.fromIterable(notificationIds)
-                            .flatMap(notificationRepository::findById)
-                            .map(Notification::getMessage) // Extraer solo el mensaje de la notificación
-                            .collectList() // Coleccionar los mensajes en una lista
-                            .flatMap(messages -> {
-                                user.setNotifications(messages); // Reemplazar los IDs con los mensajes
-                                return Mono.just(user); // Devolver el usuario con las notificaciones transformadas
-                            });
+                    if (!notificationIds.isEmpty()) {
+                        return Mono.just(user); // Devolver el usuario con las notificaciones (mensajes) ya incluidas
+                    }
+                    return Mono.just(user); // Devolver el usuario sin hacer procesamiento adicional
                 });
     }
 
     //Guardar un usuario
-    public <S extends User>Mono<S> saveUser(S user){
+    public <S extends User> Mono<S> saveUser(S user) {
         if (user.getId() == null || user.getId().isEmpty()) {
             user.setId(UUID.randomUUID().toString().substring(0,6));  // Generar un ID único para el usuario
         }
-        return userRepository.save(user);
+        return userRepository.save(user)
+                .onErrorResume(e -> Mono.error(new RuntimeException("Error al guardar el usuario: " + e.getMessage())));
     }
 
     //eliminar un usuario por ID
-    public Mono<Void> deleteUserById(String id){
-        return userRepository.deleteById(id);
+    public Mono<String> deleteUserById(String id) {
+        return userRepository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("Usuario no encontrado con ID: " + id)))
+                .flatMap(user -> userRepository.deleteById(id)
+                        .thenReturn("Usuario con ID: " + id + " ha sido eliminado con éxito.")
+                );
     }
 
 }
