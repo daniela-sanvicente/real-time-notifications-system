@@ -49,7 +49,7 @@ jobs:
       working-directory: real-time-notifications-microservice  # Cambia el contexto de Docker al directorio correcto
  
     - name: Log in to Github Container Resgistry
-      run: echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      run: echo ${{ secrets.Notification }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
  
     - name: Push Docker image
       run: docker push ghcr.io/daniela-sanvicente/my-apprtnt:${{ github.sha }}
